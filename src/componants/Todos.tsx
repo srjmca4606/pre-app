@@ -1,18 +1,15 @@
-import {type FC } from "react";
+import {useContext } from "react";
 import type { Todo } from "./Types";
 import TodoItem from "./TodoItem";
+import { AppContext } from "../AppContext";
 
-type TodosProps = {
-    todoArray: Todo[],
-    addTodoItem: (newTodo: Todo) => void,
-    deleteTodoItem: (todoId: number) => void
-}
-
-const Todos: FC<TodosProps> = ({ todoArray, addTodoItem, deleteTodoItem }) => {    
+const Todos = () => {    
+    
+    const {todos, addTodoItem} = useContext(AppContext)
     
     return (
         <>
-            <h1>Todos lists: {todoArray.length}</h1>
+            <h1>Todos lists: {todos.length}</h1>
             <button onClick={() => {
                 const newTodo: Todo = {
                     userId: new Date().getTime(),
@@ -26,8 +23,8 @@ const Todos: FC<TodosProps> = ({ todoArray, addTodoItem, deleteTodoItem }) => {
             </button>    
             <ul>
                 {
-                    todoArray.map((todo) => {
-                        return <TodoItem key={todo.id} Item={todo} deleteTodoItem={deleteTodoItem} />;
+                    todos.map((todo) => {
+                        return <TodoItem key={todo.id} Item={todo} />;
                     })
                 }                
             </ul>

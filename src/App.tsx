@@ -2,38 +2,67 @@ import { useEffect, useState } from 'react';
 import './App.css'
 import type { Todo } from './componants/Types';
 import Todos from './componants/Todos';
+import useWindowsResize from './hooks/useWindowsResize';
+import useFetch from './hooks/useFetch';
+import { AppContext } from './AppContext';
 
 function App() { 
 
+  //Custom hook to get the current window size and update it on window resize event
+  const size = useWindowsResize();
+  const { data, loading } = useFetch('https://jsonplaceholder.typicode.com/todos');
+
   const [todos, setTodos] = useState<Todo[]>([]);
   
-      const addTodoItem = (newTodo: Todo) => {
-        setTodos([newTodo, ...todos]);
-      }
-  
-      const deleteTodoItem = (todoId: number) => {
-        setTodos(todos.filter((todo) => todo.id !== todoId));
-      }
+  const addTodoItem = (newTodo: Todo) => {
+    setTodos([newTodo, ...todos]);
+  }
 
-      const getTodos = async () => {
-          const response = await fetch('https://jsonplaceholder.typicode.com/todos');
-          const jsonResp = await response.json();
-          setTodos(jsonResp);
-      }
+  const deleteTodoItem = (todoId: number) => {
+    setTodos(todos.filter((todo) => todo.id !== todoId));
+  }
+
+  // const getTodos = async () => {
+  //     const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+  //     const jsonResp = await response.json();
+  //     setTodos(jsonResp);
+  // }
   
-      useEffect(() => {
-        console.log("Todos component mounted");
-        getTodos();             
-    }, []);
+  //As aoon as data changes, update the todos state with the new data
+   useEffect(() => {
+       console.log("Todos component mounted");
+       setTodos(data);             
+   }, [data]);
+ 
+  if (loading) {
+    return <p>Loading...</p>    
+  }
 
   return (
     
       <section id="center">
         
         <div>
-          <h1>Hello React</h1>
-          <Todos todoArray={todos} addTodoItem={addTodoItem} deleteTodoItem={deleteTodoItem}  />
-          
+          <h1>Hello React</h1>         
+          {/* {
+            size.width < 400 ? 
+            <p>Window width is less than 400px</p> : 
+            <Todos todoArray={todos} addTodoItem={addTodoItem} deleteTodoItem={deleteTodoItem}  />
+          } */}
+
+          <AppContext.Provider value={{
+              todos,
+              addTodoItem,
+              deleteTodoItem
+            }}>
+
+              {
+                size.width < 400 ? 
+                <p>Window width is less than 400px</p> : 
+                <Todos />
+              }
+          </AppContext.Provider>
+
           {/*<LoginForm />
 
           <WelcomeMessage isLoggedIn={true} />
