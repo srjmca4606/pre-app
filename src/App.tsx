@@ -10,7 +10,7 @@ function App() {
 
   //Custom hook to get the current window size and update it on window resize event
   const size = useWindowsResize();
-  const { data, loading } = useFetch('https://jsonplaceholder.typicode.com/todos');
+  const { data, loading } = useFetch<Todo[]>('https://jsonplaceholder.typicode.com/todos');
 
   const [todos, setTodos] = useState<Todo[]>([]);
   
@@ -21,21 +21,15 @@ function App() {
   const deleteTodoItem = (todoId: number) => {
     setTodos(todos.filter((todo) => todo.id !== todoId));
   }
-
-  // const getTodos = async () => {
-  //     const response = await fetch('https://jsonplaceholder.typicode.com/todos');
-  //     const jsonResp = await response.json();
-  //     setTodos(jsonResp);
-  // }
-  
+ 
   //As aoon as data changes, update the todos state with the new data
-   useEffect(() => {
-       console.log("Todos component mounted");
-       setTodos(data);             
-   }, [data]);
+    useEffect(() => {
+        console.log("Todos component mounted");
+         setTodos(data ?  data : []);             
+    }, [data]);
  
   if (loading) {
-    return <p>Loading...</p>    
+    return <h1>Loading...</h1>    
   }
 
   return (
